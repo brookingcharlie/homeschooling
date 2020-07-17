@@ -14,6 +14,9 @@ case "$1" in
   run)
     docker_run cargo run
     ;;
+  test)
+    docker_run cargo test
+    ;;
   sh)
     shift
     docker_run $@
