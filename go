@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
 
 docker_run() {
-    docker run --rm --user "$(id -u)":"$(id -g)" -e USER=$USER -v "$PWD":/usr/src/myapp -w /usr/src/myapp rust:1.45.0 $@
+    docker run \
+    --rm \
+    --user "$(id -u)":"$(id -g)" \
+    -e USER=$USER \
+    -v "$PWD":"/usr/src/myapp" \
+    -v "$PWD/.cargo/cache":"/usr/local/cargo/cache" \
+    -v "$PWD/.cargo/index":"/usr/local/cargo/index" \
+    -v "$PWD/.cargo/registry":"/usr/local/cargo/registry" \
+    -w /usr/src/myapp \
+    rust:1.45.0 \
+    $@
 }
 
 case "$1" in
