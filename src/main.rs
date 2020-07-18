@@ -20,14 +20,18 @@ fn get_partitions(xs: Vec<i32>) -> Option<Vec<Vec<i32>>> {
 mod tests {
     #[test]
     fn rejects_indivisible_tasks() {
-        assert_eq!(super::get_partitions(vec![1,1,2]).is_none(), true);
+        assert!(super::get_partitions(vec![1,1,2]).is_none());
     }
 
     #[test]
     fn partitions_three_equal_tasks() {
-        for partition in super::get_partitions(vec![1,1,1]).unwrap() {
-            assert_eq!(partition.len(), 1);
-            assert_eq!(partition[0], 1);
-        }
+        let partitions = super::get_partitions(vec![1,1,1]).unwrap();
+        assert!(partitions.iter().all(|p| p.len() == 1 && p[0] == 1))
+    }
+
+    #[test]
+    fn partitions_tricky_example() {
+        let partitions = super::get_partitions(vec![5, 5, 4, 3, 3, 4, 2, 2, 8]).unwrap();
+        assert!(partitions.iter().all(|p| p.iter().sum::<i32>() == 12), "{:?}", partitions)
     }
 }
