@@ -6,7 +6,7 @@ fn main() {
 }
 
 fn get_partitions(xs: &[u32]) -> Option<Vec<Vec<u32>>> {
-    let total = sum(xs);
+    let total: u32 = xs.iter().sum();
     if xs.len() < 3 || total % 3 != 0  {
         return None
     }
@@ -17,31 +17,31 @@ fn get_partitions(xs: &[u32]) -> Option<Vec<Vec<u32>>> {
     build_partitions(xs, target, &p1, &p2, &p3)
 }
 
-fn build_partitions(xs: &[u32], target: u32, p1: &Vec<u32>, p2: &Vec<u32>, p3: &Vec<u32>) -> Option<Vec<Vec<u32>>> {
-    if sum(&p1) == target && sum(&p2) == target && sum(&p3) == target {
+fn build_partitions(xs: &[u32], target: u32, p1: &[u32], p2: &[u32], p3: &[u32]) -> Option<Vec<Vec<u32>>> {
+    if p1.iter().sum::<u32>() == target && p2.iter().sum::<u32>() == target && p3.iter().sum::<u32>() == target {
         return Some(vec![p1.to_vec(), p2.to_vec(), p3.to_vec()])
     }
     if xs.len() == 0 {
         return None
     }
-    if sum(&p1) + xs[0] <= target {
-        let mut p1x: Vec<u32> = p1.clone();
+    if p1.iter().sum::<u32>() + xs[0] <= target {
+        let mut p1x: Vec<u32> = p1.to_vec();
         p1x.push(xs[0]);
         let ps1 = build_partitions(&xs[1..], target, &p1x, &p2, &p3);
         if ps1.is_some() {
             return ps1
         }
     }
-    if sum(&p2) + xs[0] <= target {
-        let mut p2x: Vec<u32> = p2.clone();
+    if p2.iter().sum::<u32>() + xs[0] <= target {
+        let mut p2x: Vec<u32> = p2.to_vec();
         p2x.push(xs[0]);
         let ps2 = build_partitions(&xs[1..], target, &p1, &p2x, &p3);
         if ps2.is_some() {
             return ps2
         }
     }
-    if sum(&p3) + xs[0] <= target {
-        let mut p3x: Vec<u32> = p3.clone();
+    if p3.iter().sum::<u32>() + xs[0] <= target {
+        let mut p3x: Vec<u32> = p3.to_vec();
         p3x.push(xs[0]);
         let ps3 = build_partitions(&xs[1..], target, &p1, &p2, &p3x);
         if ps3.is_some() {
@@ -50,8 +50,6 @@ fn build_partitions(xs: &[u32], target: u32, p1: &Vec<u32>, p2: &Vec<u32>, p3: &
     }
     None
 }
-
-fn sum(xs: &[u32]) -> u32 { xs.iter().sum::<u32>() }
 
 #[cfg(test)]
 mod tests {
@@ -90,13 +88,13 @@ mod tests {
     fn partitions_given_example() {
         let ps = super::get_partitions(&[5, 4, 1, 2, 7, 8, 3]).unwrap();
         assert_eq!(ps.len(), 3);
-        assert!(ps.iter().all(|p| super::sum(p) == 10), "{:?}", ps)
+        assert!(ps.iter().all(|p| p.iter().sum::<u32>() == 10), "{:?}", ps)
     }
 
     #[test]
     fn partitions_tricky_example() {
         let ps = super::get_partitions(&[5, 5, 4, 3, 3, 4, 2, 2, 8]).unwrap();
         assert_eq!(ps.len(), 3);
-        assert!(ps.iter().all(|p| super::sum(p) == 12), "{:?}", ps)
+        assert!(ps.iter().all(|p| p.iter().sum::<u32>() == 12), "{:?}", ps)
     }
 }
