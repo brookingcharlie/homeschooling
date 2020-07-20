@@ -7,28 +7,30 @@ fn main() {
     }
 }
 
-fn get_partitions(xs: &[usize]) -> Option<Vec<Vec<usize>>> {
-    let total: usize = xs.iter().sum();
-    if xs.len() < NUM_PARTITIONS || total % NUM_PARTITIONS != 0  {
+fn get_partitions(elements: &[usize]) -> Option<Vec<Vec<usize>>> {
+    let total: usize = elements.iter().sum();
+    if elements.len() < NUM_PARTITIONS || total % NUM_PARTITIONS != 0  {
         return None
     }
-    build_partitions(xs, total / NUM_PARTITIONS, vec![Vec::new(); NUM_PARTITIONS])
+    build_partitions(elements, total / NUM_PARTITIONS, vec![Vec::new(); NUM_PARTITIONS])
 }
 
-fn build_partitions(xs: &[usize], target: usize, ps: Vec<Vec<usize>>) -> Option<Vec<Vec<usize>>> {
-    if ps.iter().all(|p| p.iter().sum::<usize>() == target) {
-        return Some(ps.to_vec())
+fn build_partitions(elements: &[usize], target: usize, partitions: Vec<Vec<usize>>) -> Option<Vec<Vec<usize>>> {
+    if partitions.iter().all(|partition| partition.iter().sum::<usize>() == target) {
+        return Some(partitions.to_vec())
     }
-    if xs.len() == 0 {
+    if elements.len() == 0 {
         return None
     }
-    for (i, p) in ps.iter().enumerate() {
-        if p.iter().sum::<usize>() + xs[0] <= target {
-            let mut px: Vec<usize> = p.to_vec(); px.push(xs[0]);
-            let mut psx: Vec<Vec<usize>> = ps.to_vec(); psx[i] = px;
-            let result = build_partitions(&xs[1..], target, psx);
-            if result.is_some() {
-                return result
+    for (i, partition) in partitions.iter().enumerate() {
+        if partition.iter().sum::<usize>() + elements[0] <= target {
+            let mut new_partition: Vec<usize> = partition.to_vec();
+            new_partition.push(elements[0]);
+            let mut new_partitions: Vec<Vec<usize>> = partitions.to_vec();
+            new_partitions[i] = new_partition;
+            match build_partitions(&elements[1..], target, new_partitions) {
+                result @ Some(_) => return result,
+                None => continue
             }
         }
     }
@@ -49,22 +51,22 @@ mod tests {
 
     #[test]
     fn partitions_three_equal_elements() {
-        let ps = super::get_partitions(&[1,1,1]).unwrap();
-        assert_eq!(ps.len(), super::NUM_PARTITIONS);
-        assert!(ps.iter().all(|p| p.len() == 1 && p[0] == 1), "{:?}", ps)
+        let partitions = super::get_partitions(&[1,1,1]).unwrap();
+        assert_eq!(partitions.len(), super::NUM_PARTITIONS);
+        assert!(partitions.iter().all(|partition| partition.iter().sum::<usize>() == 1), "{:?}", partitions)
     }
 
     #[test]
     fn partitions_given_example() {
-        let ps = super::get_partitions(&[5, 4, 1, 2, 7, 8, 3]).unwrap();
-        assert_eq!(ps.len(), super::NUM_PARTITIONS);
-        assert!(ps.iter().all(|p| p.iter().sum::<usize>() == 10), "{:?}", ps)
+        let partitions = super::get_partitions(&[5, 4, 1, 2, 7, 8, 3]).unwrap();
+        assert_eq!(partitions.len(), super::NUM_PARTITIONS);
+        assert!(partitions.iter().all(|partition| partition.iter().sum::<usize>() == 10), "{:?}", partitions)
     }
 
     #[test]
     fn partitions_tricky_example() {
-        let ps = super::get_partitions(&[5, 5, 4, 3, 3, 4, 2, 2, 8]).unwrap();
-        assert_eq!(ps.len(), super::NUM_PARTITIONS);
-        assert!(ps.iter().all(|p| p.iter().sum::<usize>() == 12), "{:?}", ps)
+        let partitions = super::get_partitions(&[5, 5, 4, 3, 3, 4, 2, 2, 8]).unwrap();
+        assert_eq!(partitions.len(), super::NUM_PARTITIONS);
+        assert!(partitions.iter().all(|partition| partition.iter().sum::<usize>() == 12), "{:?}", partitions)
     }
 }
