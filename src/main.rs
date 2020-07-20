@@ -1,5 +1,3 @@
-use std::fmt;
-
 const NUM_PARTITIONS: usize = 3;
 
 fn main() {
@@ -9,6 +7,7 @@ fn main() {
     }
 }
 
+#[derive(Debug)]
 struct Task {
     name: String,
     points: usize
@@ -16,14 +15,6 @@ struct Task {
 impl Task {
     fn new(name: &str, points: usize) -> Task {
         Task{name: name.to_string(), points: points}
-    }
-}
-impl fmt::Debug for Task {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("Task")
-         .field("name", &self.name)
-         .field("point", &self.points)
-         .finish()
     }
 }
 
