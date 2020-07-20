@@ -39,34 +39,23 @@ fn build_partitions(elements: &[usize], target: usize, partitions: Vec<Vec<usize
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn rejects_empty_set() {
-        assert!(super::get_partitions(&[]).is_none());
+    use test_case::test_case;
+    use super::*;
+
+    #[test_case(&[]; "empty set")]
+    #[test_case(&[1, 1, 2]; "indivisible elements")]
+    fn invalid(elements: &[usize]) {
+        assert!(get_partitions(elements).is_none());
     }
 
-    #[test]
-    fn rejects_indivisible_elements() {
-        assert!(super::get_partitions(&[1,1,2]).is_none());
-    }
-
-    #[test]
-    fn partitions_three_equal_elements() {
-        let partitions = super::get_partitions(&[1,1,1]).unwrap();
-        assert_eq!(partitions.len(), super::NUM_PARTITIONS);
-        assert!(partitions.iter().all(|partition| partition.iter().sum::<usize>() == 1), "{:?}", partitions)
-    }
-
-    #[test]
-    fn partitions_given_example() {
-        let partitions = super::get_partitions(&[5, 4, 1, 2, 7, 8, 3]).unwrap();
-        assert_eq!(partitions.len(), super::NUM_PARTITIONS);
-        assert!(partitions.iter().all(|partition| partition.iter().sum::<usize>() == 10), "{:?}", partitions)
-    }
-
-    #[test]
-    fn partitions_tricky_example() {
-        let partitions = super::get_partitions(&[5, 5, 4, 3, 3, 4, 2, 2, 8]).unwrap();
-        assert_eq!(partitions.len(), super::NUM_PARTITIONS);
-        assert!(partitions.iter().all(|partition| partition.iter().sum::<usize>() == 12), "{:?}", partitions)
+    #[test_case(&[1, 1, 1]; "three equal elements")]
+    #[test_case(&[5, 4, 1, 2, 7, 8, 3]; "given example")]
+    #[test_case(&[5, 5, 4, 3, 3, 4, 2, 2, 8]; "trickier example")]
+    fn valid(elements: &[usize]) {
+        let partitions = get_partitions(elements).unwrap();
+        let correct =
+            partitions.len() == NUM_PARTITIONS &&
+            partitions.iter().all(|p| p.iter().sum::<usize>() == elements.iter().sum::<usize>() / 3);
+        assert!(correct, "incorrect partitions {:?}", partitions)
     }
 }

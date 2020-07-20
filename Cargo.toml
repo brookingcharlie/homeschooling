@@ -3,4 +3,7 @@ name = "homeschool"
 version = "0.1.0"
 edition = "2018"
 
+[dev-dependencies]
+test-case = "1.0.0"
+
 [dependencies]
