@@ -1,6 +1,4 @@
-use std::convert::TryInto;
-
-const NUM_PARTITIONS: u32 = 3;
+const NUM_PARTITIONS: usize = 3;
 
 fn main() {
     match get_partitions(&[1,1,1]) {
@@ -9,26 +7,25 @@ fn main() {
     }
 }
 
-fn get_partitions(xs: &[u32]) -> Option<Vec<Vec<u32>>> {
-    let total: u32 = xs.iter().sum();
-    if xs.len() < NUM_PARTITIONS.try_into().unwrap() || total % NUM_PARTITIONS != 0  {
+fn get_partitions(xs: &[usize]) -> Option<Vec<Vec<usize>>> {
+    let total: usize = xs.iter().sum();
+    if xs.len() < NUM_PARTITIONS || total % NUM_PARTITIONS != 0  {
         return None
     }
-    let target = total / NUM_PARTITIONS;
-    build_partitions(xs, target, vec![Vec::new(); NUM_PARTITIONS.try_into().unwrap()])
+    build_partitions(xs, total / NUM_PARTITIONS, vec![Vec::new(); NUM_PARTITIONS])
 }
 
-fn build_partitions(xs: &[u32], target: u32, ps: Vec<Vec<u32>>) -> Option<Vec<Vec<u32>>> {
-    if ps.iter().all(|p| p.iter().sum::<u32>() == target) {
+fn build_partitions(xs: &[usize], target: usize, ps: Vec<Vec<usize>>) -> Option<Vec<Vec<usize>>> {
+    if ps.iter().all(|p| p.iter().sum::<usize>() == target) {
         return Some(ps.to_vec())
     }
     if xs.len() == 0 {
         return None
     }
     for (i, p) in ps.iter().enumerate() {
-        if p.iter().sum::<u32>() + xs[0] <= target {
-            let mut px: Vec<u32> = p.to_vec(); px.push(xs[0]);
-            let mut psx: Vec<Vec<u32>> = ps.to_vec(); psx[i] = px;
+        if p.iter().sum::<usize>() + xs[0] <= target {
+            let mut px: Vec<usize> = p.to_vec(); px.push(xs[0]);
+            let mut psx: Vec<Vec<usize>> = ps.to_vec(); psx[i] = px;
             let result = build_partitions(&xs[1..], target, psx);
             if result.is_some() {
                 return result
@@ -40,8 +37,6 @@ fn build_partitions(xs: &[u32], target: u32, ps: Vec<Vec<u32>>) -> Option<Vec<Ve
 
 #[cfg(test)]
 mod tests {
-    use std::convert::TryInto;
-
     #[test]
     fn rejects_empty_set() {
         assert!(super::get_partitions(&[]).is_none());
@@ -55,21 +50,21 @@ mod tests {
     #[test]
     fn partitions_three_equal_elements() {
         let ps = super::get_partitions(&[1,1,1]).unwrap();
-        assert_eq!(ps.len(), super::NUM_PARTITIONS.try_into().unwrap());
+        assert_eq!(ps.len(), super::NUM_PARTITIONS);
         assert!(ps.iter().all(|p| p.len() == 1 && p[0] == 1), "{:?}", ps)
     }
 
     #[test]
     fn partitions_given_example() {
         let ps = super::get_partitions(&[5, 4, 1, 2, 7, 8, 3]).unwrap();
-        assert_eq!(ps.len(), super::NUM_PARTITIONS.try_into().unwrap());
-        assert!(ps.iter().all(|p| p.iter().sum::<u32>() == 10), "{:?}", ps)
+        assert_eq!(ps.len(), super::NUM_PARTITIONS);
+        assert!(ps.iter().all(|p| p.iter().sum::<usize>() == 10), "{:?}", ps)
     }
 
     #[test]
     fn partitions_tricky_example() {
         let ps = super::get_partitions(&[5, 5, 4, 3, 3, 4, 2, 2, 8]).unwrap();
-        assert_eq!(ps.len(), super::NUM_PARTITIONS.try_into().unwrap());
-        assert!(ps.iter().all(|p| p.iter().sum::<u32>() == 12), "{:?}", ps)
+        assert_eq!(ps.len(), super::NUM_PARTITIONS);
+        assert!(ps.iter().all(|p| p.iter().sum::<usize>() == 12), "{:?}", ps)
     }
 }
