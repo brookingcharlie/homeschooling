@@ -1,34 +1,54 @@
+use std::fmt;
+
 const NUM_PARTITIONS: usize = 3;
 
 fn main() {
-    match get_partitions(&[1,1,1]) {
+    match get_partitions(&[&Task::new("A", 1), &Task::new("B", 1), &Task::new("C", 1)]) {
         Some(_) => println!("Yes"),
         None => println!("No"),
     }
 }
 
-fn get_partitions(elements: &[usize]) -> Option<Vec<Vec<usize>>> {
-    let total: usize = elements.iter().sum();
-    if elements.len() < NUM_PARTITIONS || total % NUM_PARTITIONS != 0  {
-        return None
+struct Task {
+    name: String,
+    points: usize
+}
+impl Task {
+    fn new(name: &str, points: usize) -> Task {
+        Task{name: name.to_string(), points: points}
     }
-    build_partitions(elements, total / NUM_PARTITIONS, vec![Vec::new(); NUM_PARTITIONS])
+}
+impl fmt::Debug for Task {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Task")
+         .field("name", &self.name)
+         .field("point", &self.points)
+         .finish()
+    }
 }
 
-fn build_partitions(elements: &[usize], target: usize, partitions: Vec<Vec<usize>>) -> Option<Vec<Vec<usize>>> {
-    if partitions.iter().all(|partition| partition.iter().sum::<usize>() == target) {
+fn get_partitions<'a>(tasks: &'a [&Task]) -> Option<Vec<Vec<&'a Task>>> {
+    let total: usize = tasks.iter().map(|t| t.points).sum();
+    if tasks.len() < NUM_PARTITIONS || total % NUM_PARTITIONS != 0  {
+        return None
+    }
+    build_partitions(tasks, total / NUM_PARTITIONS, vec![Vec::new(); NUM_PARTITIONS])
+}
+
+fn build_partitions<'a>(tasks: &'a [&Task], target: usize, partitions: Vec<Vec<&'a Task>>) -> Option<Vec<Vec<&'a Task>>> {
+    if partitions.iter().all(|partition| partition.iter().map(|t| t.points).sum::<usize>() == target) {
         return Some(partitions.to_vec())
     }
-    if elements.len() == 0 {
+    if tasks.len() == 0 {
         return None
     }
     for (i, partition) in partitions.iter().enumerate() {
-        if partition.iter().sum::<usize>() + elements[0] <= target {
-            let mut new_partition: Vec<usize> = partition.to_vec();
-            new_partition.push(elements[0]);
-            let mut new_partitions: Vec<Vec<usize>> = partitions.to_vec();
+        if partition.iter().map(|t| t.points).sum::<usize>() + tasks[0].points <= target {
+            let mut new_partition: Vec<&Task> = partition.to_vec();
+            new_partition.push(tasks[0]);
+            let mut new_partitions: Vec<Vec<&Task>> = partitions.to_vec();
             new_partitions[i] = new_partition;
-            match build_partitions(&elements[1..], target, new_partitions) {
+            match build_partitions(&tasks[1..], target, new_partitions) {
                 result @ Some(_) => return result,
                 None => continue
             }
@@ -43,19 +63,50 @@ mod tests {
     use super::*;
 
     #[test_case(&[]; "empty set")]
-    #[test_case(&[1, 1, 2]; "indivisible elements")]
-    fn invalid(elements: &[usize]) {
-        assert!(get_partitions(elements).is_none());
+    #[test_case(&[&Task::new("A", 1), &Task::new("B", 1), &Task::new("C", 2)]; "indivisible tasks")]
+    fn invalid(tasks: &[&Task]) {
+        assert!(get_partitions(tasks).is_none());
     }
 
-    #[test_case(&[1, 1, 1]; "three equal elements")]
-    #[test_case(&[5, 4, 1, 2, 7, 8, 3]; "given example")]
-    #[test_case(&[5, 5, 4, 3, 3, 4, 2, 2, 8]; "trickier example")]
-    fn valid(elements: &[usize]) {
-        let partitions = get_partitions(elements).unwrap();
+    #[test_case(
+        &[
+            &Task::new("A", 1),
+            &Task::new("B", 1),
+            &Task::new("C", 1)
+        ];
+        "three equal tasks"
+    )]
+    #[test_case(
+        &[
+            &Task::new("A", 5),
+            &Task::new("B", 4),
+            &Task::new("C", 1),
+            &Task::new("D", 2),
+            &Task::new("E", 7),
+            &Task::new("F", 8),
+            &Task::new("G", 3)
+        ];
+        "given example"
+    )]
+    #[test_case(
+        &[
+            &Task::new("A", 5),
+            &Task::new("B", 5),
+            &Task::new("C", 4),
+            &Task::new("D", 3),
+            &Task::new("E", 3),
+            &Task::new("F", 4),
+            &Task::new("G", 2),
+            &Task::new("H", 2),
+            &Task::new("G", 8)
+        ];
+        "trickier example"
+    )]
+    fn valid(tasks: &[&Task]) {
+        let partitions = get_partitions(tasks).unwrap();
         let correct =
             partitions.len() == NUM_PARTITIONS &&
-            partitions.iter().all(|p| p.iter().sum::<usize>() == elements.iter().sum::<usize>() / 3);
+            partitions.iter().all(|p| p.iter().map(|t| t.points).sum::<usize>() == tasks.iter().map(|t| t.points).sum::<usize>() / 3);
         assert!(correct, "incorrect partitions {:?}", partitions)
     }
 }
