@@ -10,7 +10,7 @@ fn main() {
     match get_partitions(&tasks) {
         Some(partitions) => {
             println!("Yes");
-            println!("\n");
+            println!("");
             println!("{}", describe_partitions(&partitions).join("\n"));
         },
         None => println!("No")
