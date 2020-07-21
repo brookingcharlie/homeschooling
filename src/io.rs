@@ -5,7 +5,12 @@ pub fn parse_tasks(lines: &[String]) -> Vec<Task> {
     let regex = Regex::new(r"^(?P<name>[^:]+?)\s*:\s*(?P<points>[\d]+)\s*(points?)?$").unwrap();
     lines.iter()
         .map(|line| regex.captures(&line).unwrap())
-        .map(|caps| Task::new(&caps["name"], caps["points"].parse::<usize>().unwrap()))
+        .map(|caps| {
+            let name = &caps["name"];
+            let points = caps["points"].parse::<usize>().unwrap();
+            assert!(points > 0);
+            Task::new(name, points)
+        })
         .collect()
 }
 
@@ -25,6 +30,7 @@ pub fn describe_partitions(partitions: &[Vec<&Task>]) -> Vec<String> {
 
 #[cfg(test)]
 mod tests {
+    use test_case::test_case;
     use super::*;
 
     #[test]
@@ -40,10 +46,13 @@ mod tests {
         assert_eq!(tasks[2], Task::new("Task 1/23", 1));
     }
 
-    #[test]
+    #[test_case(&[String::from("gibberish")]; "gibberish")]
+    #[test_case(&[String::from("Task A: 5"), String::from("Task B = 13")]; "no colon")]
+    #[test_case(&[String::from("Task B: 0"), String::from("Task A: 5"), ]; "zero points")]
+    #[test_case(&[String::from("Task B: -4"), String::from("Task A: 5"), ]; "negative points")]
     #[should_panic]
-    fn panics_on_invalid_lines() {
-        parse_tasks(&[String::from("Task A: 5"), String::from("Task B = 13")]);
+    fn panics_on_invalid_lines(lines: &[String]) {
+        parse_tasks(lines);
     }
 
     #[test]
