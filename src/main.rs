@@ -65,10 +65,10 @@ mod tests {
     fn valid(points: &[usize]) {
         let tasks = tasks_from_points(points);
         let partitions = get_partitions(&tasks).unwrap();
-        let correct =
-            partitions.len() == NUM_PARTITIONS &&
-            partitions.iter().all(|p| p.iter().map(|t| t.points).sum::<usize>() == tasks.iter().map(|t| t.points).sum::<usize>() / 3);
-        assert!(correct, "incorrect partitions {:?}", partitions)
+        assert_eq!(partitions.len(), NUM_PARTITIONS, "incorrect number of partitions {:?}", partitions);
+        let target_sum = tasks.iter().map(|t| t.points).sum::<usize>() / NUM_PARTITIONS;
+        let correct_sums = partitions.iter().all(|p| p.iter().map(|t| t.points).sum::<usize>() == target_sum);
+        assert!(correct_sums, "incorrect partition sums {:?}", partitions)
     }
 
     fn tasks_from_points(points: &[usize]) -> Vec<Task> {
