@@ -1,7 +1,12 @@
 const NUM_PARTITIONS: usize = 3;
 
 fn main() {
-    match get_partitions(&[Task::new("A", 1), Task::new("B", 1), Task::new("C", 1)]) {
+    let tasks = [
+        Task { name: String::from("A"), points: 1 },
+        Task { name: String::from("B"), points: 1 },
+        Task { name: String::from("C"), points: 1 }
+    ];
+    match get_partitions(&tasks) {
         Some(_) => println!("Yes"),
         None => println!("No"),
     }
@@ -11,11 +16,6 @@ fn main() {
 struct Task {
     name: String,
     points: usize
-}
-impl Task {
-    fn new(name: &str, points: usize) -> Task {
-        Task{name: name.to_string(), points: points}
-    }
 }
 
 fn get_partitions<'a>(tasks: &'a [Task]) -> Option<Vec<Vec<&'a Task>>> {
@@ -72,6 +72,6 @@ mod tests {
     }
 
     fn tasks_from_points(points: &[usize]) -> Vec<Task> {
-        points.iter().map(|points| Task::new("Task", *points)).collect()
+        points.iter().map(|points| Task { name: String::from("Task"), points: *points }).collect()
     }
 }
