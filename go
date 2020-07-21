@@ -16,26 +16,16 @@ docker_run() {
 }
 
 case "$1" in
-  clean)
-    docker_run cargo clean
-    ;;
-  build)
-    docker_run cargo build
-    ;;
-  run)
-    docker_run cargo run
-    ;;
-  test)
-    docker_run cargo test
-    ;;
-  sh)
-    shift
-    docker_run $@
-    ;;
+  clean) docker_run cargo clean ;;
+  build) docker_run cargo build ;;
+  test) docker_run cargo test ;;
+  run) docker_run cargo run ;;
+  sh) shift docker_run $@ ;;
   *)
-    echo "Usage"
+    echo "Usage:"
     echo "./go clean"
     echo "./go build"
-    echo "./go run"
+    echo "./go test"
+    echo "./go run < input.txt"
     ;;
 esac
