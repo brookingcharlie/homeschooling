@@ -54,50 +54,24 @@ mod tests {
     use super::*;
 
     #[test_case(&[]; "empty set")]
-    #[test_case(&[Task::new("A", 1), Task::new("B", 1), Task::new("C", 2)]; "indivisible tasks")]
-    fn invalid(tasks: &[Task]) {
-        assert!(get_partitions(tasks).is_none());
+    #[test_case(&[1, 1, 2]; "indivisible tasks")]
+    fn invalid(points: &[usize]) {
+        assert!(get_partitions(&tasks_from_points(points)).is_none());
     }
 
-    #[test_case(
-        &[
-            Task::new("A", 1),
-            Task::new("B", 1),
-            Task::new("C", 1)
-        ];
-        "three equal tasks"
-    )]
-    #[test_case(
-        &[
-            Task::new("A", 5),
-            Task::new("B", 4),
-            Task::new("C", 1),
-            Task::new("D", 2),
-            Task::new("E", 7),
-            Task::new("F", 8),
-            Task::new("G", 3)
-        ];
-        "given example"
-    )]
-    #[test_case(
-        &[
-            Task::new("A", 5),
-            Task::new("B", 5),
-            Task::new("C", 4),
-            Task::new("D", 3),
-            Task::new("E", 3),
-            Task::new("F", 4),
-            Task::new("G", 2),
-            Task::new("H", 2),
-            Task::new("G", 8)
-        ];
-        "trickier example"
-    )]
-    fn valid(tasks: &[Task]) {
-        let partitions = get_partitions(tasks).unwrap();
+    #[test_case(&[1, 1, 1]; "three equal tasks")]
+    #[test_case(&[5, 4, 1, 2, 7, 8, 3]; "given example")]
+    #[test_case(&[5, 5, 4, 3, 3, 4, 2, 2, 8]; "trickier example")]
+    fn valid(points: &[usize]) {
+        let tasks = tasks_from_points(points);
+        let partitions = get_partitions(&tasks).unwrap();
         let correct =
             partitions.len() == NUM_PARTITIONS &&
             partitions.iter().all(|p| p.iter().map(|t| t.points).sum::<usize>() == tasks.iter().map(|t| t.points).sum::<usize>() / 3);
         assert!(correct, "incorrect partitions {:?}", partitions)
+    }
+
+    fn tasks_from_points(points: &[usize]) -> Vec<Task> {
+        points.iter().map(|points| Task::new("Task", *points)).collect()
     }
 }
