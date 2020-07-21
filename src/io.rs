@@ -9,7 +9,7 @@ pub fn parse_tasks(lines: &[String]) -> Vec<Task> {
         .collect()
 }
 
-pub fn describe_partitions(partitions: &Vec<Vec<&Task>>) -> Vec<String> {
+pub fn describe_partitions(partitions: &[Vec<&Task>]) -> Vec<String> {
     partitions.iter().enumerate().map(|(i, partition)| {
         format!(
             "Child {}: {} = {} points",
