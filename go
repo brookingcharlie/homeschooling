@@ -3,6 +3,7 @@
 docker_run() {
     docker run \
     --rm \
+    -i \
     --user "$(id -u)":"$(id -g)" \
     -e USER=$USER \
     -v "$PWD":"/usr/src/myapp" \

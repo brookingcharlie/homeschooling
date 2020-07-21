@@ -1,21 +1,27 @@
+use std::io::stdin;
+use std::io::prelude::*;
+use regex::Regex;
+
 const NUM_PARTITIONS: usize = 3;
 
 fn main() {
-    let tasks = [
-        Task { name: String::from("A"), points: 1 },
-        Task { name: String::from("B"), points: 1 },
-        Task { name: String::from("C"), points: 1 }
-    ];
+    let lines: Vec<String> = stdin().lock().lines().map(|l| l.unwrap()).collect();
+    let tasks: Vec<Task> = parse_tasks(&lines);
     match get_partitions(&tasks) {
         Some(_) => println!("Yes"),
         None => println!("No"),
     }
 }
 
-#[derive(Debug)]
-struct Task {
-    name: String,
-    points: usize
+#[derive(PartialEq, Debug)]
+struct Task { name: String, points: usize }
+
+fn parse_tasks(lines: &[String]) -> Vec<Task> {
+    let regex = Regex::new(r"^(?P<name>[^:]+?)\s*:\s*(?P<points>[\d]+)$").unwrap();
+    lines.iter()
+        .map(|line| regex.captures(&line).unwrap())
+        .map(|caps| Task { name: caps["name"].to_string(), points: caps["points"].parse::<usize>().unwrap() })
+        .collect()
 }
 
 fn get_partitions<'a>(tasks: &'a [Task]) -> Option<Vec<Vec<&'a Task>>> {
@@ -53,17 +59,31 @@ mod tests {
     use test_case::test_case;
     use super::*;
 
+    #[test]
+    fn parses_valid_lines() {
+        let tasks = parse_tasks(&[String::from("Task A : 5"), String::from("Task B:13")]);
+        assert_eq!(tasks.len(), 2);
+        assert_eq!(tasks[0], Task { name: String::from("Task A"), points: 5 });
+        assert_eq!(tasks[1], Task { name: String::from("Task B"), points: 13 });
+    }
+
+    #[test]
+    #[should_panic]
+    fn panics_on_invalid_lines() {
+        parse_tasks(&[String::from("Task A: 5"), String::from("Task B = 13")]);
+    }
+
     #[test_case(&[]; "empty set")]
     #[test_case(&[1, 1, 2]; "indivisible tasks")]
-    fn invalid(points: &[usize]) {
-        assert!(get_partitions(&tasks_from_points(points)).is_none());
+    fn invalid(points_list: &[usize]) {
+        assert!(get_partitions(&tasks_from_points(points_list)).is_none());
     }
 
     #[test_case(&[1, 1, 1]; "three equal tasks")]
     #[test_case(&[5, 4, 1, 2, 7, 8, 3]; "given example")]
     #[test_case(&[5, 5, 4, 3, 3, 4, 2, 2, 8]; "trickier example")]
-    fn valid(points: &[usize]) {
-        let tasks = tasks_from_points(points);
+    fn valid(points_list: &[usize]) {
+        let tasks = tasks_from_points(points_list);
         let partitions = get_partitions(&tasks).unwrap();
         assert_eq!(partitions.len(), NUM_PARTITIONS, "incorrect number of partitions {:?}", partitions);
         let target_sum = tasks.iter().map(|t| t.points).sum::<usize>() / NUM_PARTITIONS;
@@ -71,7 +91,7 @@ mod tests {
         assert!(correct_sums, "incorrect partition sums {:?}", partitions)
     }
 
-    fn tasks_from_points(points: &[usize]) -> Vec<Task> {
-        points.iter().map(|points| Task { name: String::from("Task"), points: *points }).collect()
+    fn tasks_from_points(points_list: &[usize]) -> Vec<Task> {
+        points_list.iter().map(|points| Task { name: String::from("Task"), points: *points }).collect()
     }
 }

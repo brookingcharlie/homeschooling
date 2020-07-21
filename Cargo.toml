@@ -7,3 +7,4 @@ edition = "2018"
 test-case = "1.0.0"
 
 [dependencies]
+regex = "1.3.9"
