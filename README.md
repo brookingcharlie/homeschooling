@@ -3,8 +3,6 @@
 Rust implementation for Shokunin Jul 2020,
 using recursion to seach for an even division of tasks.
 
-This was my first time using Rust. It's an impressive but also intimidating language!
-
 To run the app using the example input file:
 
 ```
@@ -23,6 +21,12 @@ To run unit tests:
 ```
 
 For other build commands, run `./go` to see usage.
+
+This was my first time using Rust. I found the learning curve steep:
+the language doesn't provide gargage collection and its compiler enforces
+memory safety by requiring that you're explicit about owernship and references.
+But I could also appreciate its elegance and how the investment would pay off on
+a system requiring performance and safety.
 
 ## Background
 
