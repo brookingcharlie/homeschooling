@@ -1,0 +1,7 @@
+Task A: 5 points
+Task B: 4 points
+Task C: 1 point
+Task D: 2 points
+Task E: 7 points
+Task F: 8 points
+Task G: 3 points

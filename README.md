@@ -1,6 +1,28 @@
 # Homeschooling
 
-Shokunin Jul 2020
+Rust implementation for Shokunin Jul 2020,
+using recursion to seach for an even division of tasks.
+
+This was my first time using Rust. It's an impressive but also intimidating language!
+
+To run the app using the example input file:
+
+```
+./go run < input.txt
+Yes
+
+Child 1: Task A (5 points) + Task B (4 points) + Task C (1 point) = 10 points
+Child 2: Task D (2 points) + Task F (8 points) = 10 points
+Child 3: Task E (7 points) + Task G (3 points) = 10 points
+```
+
+To run unit tests:
+
+```
+./go test
+```
+
+For other build commands, run `./go` to see usage.
 
 ## Background
 
