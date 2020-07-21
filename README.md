@@ -3,6 +3,8 @@
 Rust implementation for Shokunin Jul 2020,
 using recursion to seach for an even division of tasks.
 
+Prerequisites: Docker
+
 To run the app using the example input file:
 
 ```
