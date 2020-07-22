@@ -42,6 +42,8 @@ fn build_partitions<'a>(tasks: &'a [Task], target: usize, partitions: &[&[&'a Ta
 #[cfg(test)]
 mod tests {
     use test_case::test_case;
+    use rand::thread_rng;
+    use rand::seq::SliceRandom;
     use super::*;
 
     #[test_case(&[]; "empty set")]
@@ -62,6 +64,16 @@ mod tests {
         let target_sum = tasks.iter().map(|t| t.points).sum::<usize>() / NUM_PARTITIONS;
         let sums_correct = partitions.iter().all(|p| p.iter().map(|t| t.points).sum::<usize>() == target_sum);
         assert!(sums_correct, "incorrect partition sums {:?}", partitions)
+    }
+
+    #[test]
+    #[ignore]
+    fn performance() {
+        let possible_points: Vec<usize> = (1..=10).collect();
+        let mut points_list: Vec<usize> = possible_points.repeat(300);
+        points_list.shuffle(&mut thread_rng());
+        let tasks = build_tasks(&points_list);
+        get_partitions(&tasks).unwrap();
     }
 
     fn build_tasks(points_list: &[usize]) -> Vec<Task> {

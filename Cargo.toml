@@ -5,6 +5,7 @@ edition = "2018"
 
 [dev-dependencies]
 test-case = "1.0.0"
+rand = "0.7.3"
 
 [dependencies]
 regex = "1.3.9"
