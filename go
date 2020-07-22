@@ -16,9 +16,9 @@ docker_run() {
 }
 
 case "$1" in
-  run) shift; docker_run cargo run --release --quiet $@ ;;
+  run) shift; docker_run cargo run --quiet $@ ;;
   test) shift; docker_run cargo test $@ ;;
-  perf) shift; docker_run cargo test --release performance -- --ignored ;;
+  perf) shift; docker_run cargo test performance -- --ignored ;;
   clean) shift; docker_run cargo clean $@ ;;
   sh) shift; docker_run $@ ;;
   *)
