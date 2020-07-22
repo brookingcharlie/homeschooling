@@ -16,23 +16,25 @@ pub fn get_partitions<'a>(tasks: &'a [Task]) -> Option<Vec<Vec<&'a Task>>> {
     if tasks.len() < NUM_PARTITIONS || total % NUM_PARTITIONS != 0 {
         return None
     }
-    build_partitions(tasks, total / NUM_PARTITIONS, &[&[]; NUM_PARTITIONS])
+    build_partitions(tasks, &[total / NUM_PARTITIONS; NUM_PARTITIONS])
 }
 
-fn build_partitions<'a>(tasks: &'a [Task], target: usize, partitions: &[&[&'a Task]; NUM_PARTITIONS]) -> Option<Vec<Vec<&'a Task>>> {
-    if partitions.iter().all(|p| p.iter().map(|t| t.points).sum::<usize>() == target) {
-        return Some(partitions.iter().map(|p| p.to_vec()).collect())
+fn build_partitions<'a>(tasks: &'a [Task], gaps: &[usize; NUM_PARTITIONS]) -> Option<Vec<Vec<&'a Task>>> {
+    if gaps.iter().all(|&gap| gap == 0) {
+        return Some(vec![vec![]; NUM_PARTITIONS])
     }
     if tasks.len() == 0 {
         return None
     }
-    for (i, partition) in partitions.iter().enumerate() {
-        if partition.iter().map(|t| t.points).sum::<usize>() + tasks[0].points <= target {
-            let mut new_partition = partition.to_vec(); new_partition.push(&tasks[0]);
-            let mut new_partitions = partitions.clone(); new_partitions[i] = &new_partition;
-            let result = build_partitions(&tasks[1..], target, &new_partitions);
-            if result.is_some() {
-                return result
+    for (i, &gap) in gaps.iter().enumerate() {
+        if tasks[0].points <= gap {
+            let mut new_gaps = gaps.clone(); new_gaps[i] = gap - tasks[0].points;
+            let sub_result = build_partitions(&tasks[1..], &new_gaps);
+            if sub_result.is_some() {
+                let sub_partitions = sub_result.unwrap();
+                let mut new_partition = vec![&tasks[0]]; new_partition.extend_from_slice(&sub_partitions[i]);
+                let mut new_partitions = sub_partitions.clone(); new_partitions[i] = new_partition;
+                return Some(new_partitions);
             }
         }
     }
@@ -69,11 +71,10 @@ mod tests {
     #[test]
     #[ignore]
     fn performance() {
-        let possible_points: Vec<usize> = (1..=10).collect();
-        let mut points_list: Vec<usize> = possible_points.repeat(300);
+        let points_range: Vec<usize> = (1..=10).collect();
+        let mut points_list: Vec<usize> = points_range.repeat(300);
         points_list.shuffle(&mut thread_rng());
-        let tasks = build_tasks(&points_list);
-        get_partitions(&tasks).unwrap();
+        get_partitions(&build_tasks(&points_list));
     }
 
     fn build_tasks(points_list: &[usize]) -> Vec<Task> {
