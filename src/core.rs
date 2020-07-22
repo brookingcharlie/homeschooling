@@ -50,14 +50,14 @@ mod tests {
     #[test_case(&[5]; "one task")]
     #[test_case(&[6, 5]; "two tasks")]
     #[test_case(&[1, 1, 2]; "indivisible tasks")]
-    fn does_not_partition_uneven_tasks(points_list: &[usize]) {
+    fn does_not_partition(points_list: &[usize]) {
         assert!(get_partitions(&build_tasks(points_list)).is_none());
     }
 
     #[test_case(&[1, 1, 1]; "three equal tasks")]
     #[test_case(&[5, 4, 1, 2, 7, 8, 3]; "given example")]
     #[test_case(&[5, 5, 4, 3, 3, 4, 2, 2, 8]; "trickier example")]
-    fn partitions_even_tasks(points_list: &[usize]) {
+    fn partitions(points_list: &[usize]) {
         let tasks = build_tasks(points_list);
         let partitions = get_partitions(&tasks).unwrap();
         assert_eq!(partitions.len(), NUM_PARTITIONS, "incorrect number of partitions {:?}", partitions);

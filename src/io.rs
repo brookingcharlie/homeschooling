@@ -51,7 +51,7 @@ mod tests {
     #[test_case(&[String::from("Task B: 0"), String::from("Task A: 5"), ]; "zero points")]
     #[test_case(&[String::from("Task B: -4"), String::from("Task A: 5"), ]; "negative points")]
     #[should_panic]
-    fn panics_on_invalid_lines(lines: &[String]) {
+    fn panics_on(lines: &[String]) {
         parse_tasks(lines);
     }
 
