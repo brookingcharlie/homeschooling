@@ -1,14 +1,14 @@
 # Homeschooling
 
 Rust implementation for Shokunin Jul 2020,
-using recursion to seach for an even division of tasks.
+using recursion to search for an even division of tasks.
 
 Prerequisites: Docker
 
-To run the app using the example input file:
+To build and run the app using the example input file:
 
 ```
-./go run < input.txt
+$ ./go run < input.txt
 Yes
 
 Child 1: Task A (5 points) + Task B (4 points) + Task C (1 point) = 10 points
@@ -16,19 +16,21 @@ Child 2: Task D (2 points) + Task F (8 points) = 10 points
 Child 3: Task E (7 points) + Task G (3 points) = 10 points
 ```
 
-To run unit tests:
+For other commands, run `./go` to see usage.
 
 ```
-./go test
+$ ./go
+Usage:
+./go run < input.txt: build and run application
+./go test: run unit tests
+./go perf: run perf test partitioning large input (tip: run twice since it builds first time)
+./go clean: remove build file
 ```
 
-For other build commands, run `./go` to see usage.
-
-This was my first time using Rust. I found the learning curve steep:
-the language doesn't provide gargage collection and its compiler enforces
-memory safety by requiring that you're explicit about owernship and references.
-But I could also appreciate its elegance and how the investment would pay off on
-a system requiring performance and safety.
+This was my first time using Rust. I found the learning curve steep: the compiler
+enforces memory safety by requiring that you're explicit about owernship and references.
+This is definitely a language that requires a decent investment in understanding
+and effort but I can see how it'd pay off for a performance-critical system.
 
 ## Background
 

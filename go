@@ -16,16 +16,16 @@ docker_run() {
 }
 
 case "$1" in
-  clean) shift; docker_run cargo clean $@ ;;
-  build) shift; docker_run cargo build $@ ;;
+  run) shift; docker_run cargo run --release --quiet $@ ;;
   test) shift; docker_run cargo test $@ ;;
-  run) shift; docker_run cargo run $@ ;;
+  perf) shift; docker_run cargo test --release performance -- --ignored ;;
+  clean) shift; docker_run cargo clean $@ ;;
   sh) shift; docker_run $@ ;;
   *)
     echo "Usage:"
-    echo "./go clean"
-    echo "./go build"
-    echo "./go test"
-    echo "./go run < input.txt"
+    echo "./go run < input.txt: build and run application"
+    echo "./go test: run unit tests"
+    echo "./go perf: run perf test partitioning large input (tip: run twice since it builds first time)"
+    echo "./go clean: remove build files"
     ;;
 esac
